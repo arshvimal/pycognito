@@ -169,6 +169,11 @@ class AWSSRP:
                 "pool_region and client should not both be specified "
                 "(region should be passed to the boto3 client instead)"
             )
+        if device_key is not None or device_group_key is not None or device_password is not None:
+            if device_key is None or device_group_key is None or device_password is None:
+                raise ValueError(
+                    "Either all device_key, device_group_key, and device_password should be specified or none at all "
+                )
 
         self.username = username
         self.password = password
@@ -480,6 +485,22 @@ class AWSSRP:
             "AccessToken": self.access_token,
             "DeviceKey": self.device_key,
             "DeviceRememberedStatus": status
+        }
+        response = requests.post(self.cognito_idp_url, headers=headers, data=json.dumps(data))
+        return f"{response} : {response.json}"
+    
+    def forget_device(self, access_token, device_key):
+        self.cognito_idp_url = f"https://cognito-idp.{self.pool_id.split('_')[0]}.amazonaws.com/"
+        self.access_token = access_token
+        self.device_key = device_key
+        headers = {
+        'Authorization': f"Bearer {self.access_token}",
+        'Content-Type': 'application/x-amz-json-1.1',
+        'X-Amz-Target': 'AWSCognitoIdentityProviderService.ForgetDevice',
+        }
+        data = {
+            "AccessToken": self.access_token,
+            "DeviceKey": self.device_key
         }
         response = requests.post(self.cognito_idp_url, headers=headers, data=json.dumps(data))
         return f"{response} : {response.json}"
