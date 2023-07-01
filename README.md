@@ -672,6 +672,62 @@ aws = AWSSRP(username='username', password='password', pool_id='user_pool_id',
 tokens = aws.authenticate_user()
 ```
 
+## Device Authentication Support
+
+You must use the `USER_SRP_AUTH` authentication flow to use the device tracking feature. Read more about [Remembered Devices](https://repost.aws/knowledge-center/cognito-user-pool-remembered-devices)
+
+# Receiving DeviceKey and DeviceGroupKey
+
+Once the `authenticate_user` class method is used for SRP authentication, the response also returns `DeviceKey` and `DeviceGrouKey`.
+These Keys will later be used to confirm the device.
+
+```python
+import boto3
+from pycognito.aws_srp import AWSSRP
+
+client = boto3.client('cognito-idp')
+aws = AWSSRP(username='username', password='password', pool_id='user_pool_id',
+             client_id='client_id', client=client)
+tokens = aws.authenticate_user()
+device_key = tokens["AuthenticationResult"]["NewDeviceMetadata"]["DeviceKey"]
+device_group_key = tokens["AuthenticationResult"]["NewDeviceMetadata"]["DeviceGroupKey"]
+```
+# Confirming a Device
+
+The `confirm_device` class method is used for confirming a device, it takes two inputs, `tokens` and `DeviceName` (`DeviceName` is optional).
+The method returns two values, `response` and `device_password`. `device_password` will later be used to authenticate your device with
+the Cognito user pool.
+
+```python
+response, device_password = user.confirm_device(tokens=tokens)
+```
+
+# Updating Device Status
+
+The `update_device_status` class method is used to update weather or not your device should be remembered. This method takes
+three inputs, `isRemembered`, `access_token` and `device_key`. `isRemembered` is a boolean value, which sets the device status as 
+`"remembered"` on `True` and `"not_remembered"` on `False`, `access_token` is the Access Token provided by Cognito and `device_key` is the key 
+provided by the `authenticate_user` method.
+
+```python
+response = user.update_device_status(False, tokens["AuthenticationResult"]["AccessToken"], device_key)
+```
+
+# Authenticating your Device
+
+To authenticate your Device, you can just add `device_key`, `device_group_key` and `device_password` to the AWSSRP class.
+
+```python
+import boto3
+from pycognito.aws_srp import AWSSRP
+
+client = boto3.client('cognito-idp')
+aws = AWSSRP(username='username', password='password', pool_id='user_pool_id',
+             client_id='client_id', client=client, device_key="device_key", 
+             device_group_key="device_group_key", device_password="device_password")
+tokens = aws.authenticate_user()
+```
+
 ## SRP Requests Authenticator
 
 `pycognito.utils.RequestsSrpAuth` is a [Requests](https://docs.python-requests.org/en/latest/)
