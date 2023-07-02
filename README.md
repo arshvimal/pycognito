@@ -732,6 +732,13 @@ aws = AWSSRP(username='username', password='password', pool_id='user_pool_id',
              device_group_key="device_group_key", device_password="device_password")
 tokens = aws.authenticate_user()
 ```
+### Forget Device
+
+To forget device, you can call the `forget_device` class method. It takes `access_token` and `device_key` as input.
+
+```python
+resonse = aws.forget_device(access_token='access_token', device_key='device_key')
+```
 
 ## SRP Requests Authenticator
 
