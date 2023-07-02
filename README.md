@@ -40,6 +40,7 @@ Makes working with AWS Cognito easier for Python developers.
   - [Confirming a Device](#confirming-a-device)
   - [Updating Device Status](#updating-device-status)
   - [Authenticating your Device](#authenticating-your-device)
+  - [Forget Device](#forget-device)
 - [SRP Requests Authenticator](#srp-requests-authenticator)
 
 ## Python Versions Supported
