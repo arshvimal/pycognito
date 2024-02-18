@@ -1,3 +1,7 @@
+# Notice
+
+This repo was created to add device authentication support to pyCognito, which has now been merged with the main branch. Therefore, I am archiving this repo.
+
 # pyCognito
 
 Makes working with AWS Cognito easier for Python developers.
